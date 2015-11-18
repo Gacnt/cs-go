@@ -153,6 +153,76 @@ type IpAddressMask struct {
 	Token *uint32 `protobuf:"varint,6,opt,name=token" json:"token,omitempty"`
 }
 
+type CPreMatchInfoData struct {
+	PredictionsPCT *int32                                    `protobuf:"varint,1,opt,name=predictions_pct" json:"predictions_pct,omitempty"`
+	Draft          *CDataGCCStrike15_v2_TournamentMatchDraft `protobuf:"bytes,4,opt,name=draft" json:"draft,omitempty"`
+	Stats          []*CPreMatchInfoData_TeamStats            `protobuf:"bytes,5,rep,name=stats" json:"stats,omitempty"`
+}
+
+type CPreMatchInfoData_TeamStats struct {
+	MatchInfoIdxtxt *int32  `protobuf:"varint,1,opt,name=match_info_idxtxt" json:"match_info_idxtxt,omitempty"`
+	MatchInfoTxt    *string `protobuf:"bytes,2,opt,name=match_info_txt" json:"match_info_txt,omitempty"`
+	MatchInfoTeams  *string `protobuf:"bytes,3,rep,name=match_info_teams" json:"match_info_teams"`
+}
+
+type CDataGCCStrike15_v2_TournamentMatchDraft struct {
+	EventId      *int32                                            `protobuf:"varint,1,opt,name=event_id" json:"event_id,omitempty"`
+	EventStageId *int32                                            `protobuf:"varint,2,opt,name=event_stage_id" json:"event_stage_id,omitempty"`
+	TeamId0      *int32                                            `protobuf:"varint,3,opt,name=team_id_0" json:"team_id_0,omitempty"`
+	TeamId1      *int32                                            `protobuf:"varint,4,opt,name=team_id_1" json:"team_id_1,omitempy"`
+	MapsCount    *int32                                            `protobuf:"varint,5,opt,name=maps_count" json:"maps_count,omitempty"`
+	MapsCurrent  *int32                                            `protobuf:"varint,6,opt,name=maps_current" json:"maps_current,omitempty"`
+	TeamIdStart  *int32                                            `protobuf:"varint,7,opt,name=team_id_start" json:"team_id_start,omitempty"`
+	TeamIdVeto1  *int32                                            `protobuf:"varint,8,opt,name=team_id_veto1" json:"team_id_veto1,omitempty"`
+	TeamIdPickn  *int32                                            `protobuf:"varint,9,opt,name=team_id_pickn" json:"team_id_pickn,omitempty"`
+	Drafts       []*CDataGCCStrike15_v2_TournamentMatchDraft_Entry `protobuf:"bytes,10,rep,name=drafts" json:"drafts,omitempty"`
+}
+
+type CDataGCCStrike15_v2_TournamentMatchDraft_Entry struct {
+	MapId    *int32 `protobuf:"varint,1,opt,name=mapid" json:"mapid,omitempty"`
+	TeamIdCT *int32 `protobuf:"varint,2,opt,name=team_id_ct" json:"team_id_ct,omitempty"`
+}
+
+func (m *CDataGCCStrike15_v2_TournamentMatchDraft_Entry) Reset() {
+	*m = CDataGCCStrike15_v2_TournamentMatchDraft_Entry{}
+}
+
+func (m *CDataGCCStrike15_v2_TournamentMatchDraft_Entry) String() string {
+	return proto.CompactTextString(m)
+}
+
+func (*CDataGCCStrike15_v2_TournamentMatchDraft_Entry) ProtoMessage() {}
+
+func (m *CDataGCCStrike15_v2_TournamentMatchDraft) Reset() {
+	*m = CDataGCCStrike15_v2_TournamentMatchDraft{}
+}
+
+func (m *CDataGCCStrike15_v2_TournamentMatchDraft) String() string {
+	return proto.CompactTextString(m)
+}
+
+func (*CDataGCCStrike15_v2_TournamentMatchDraft) ProtoMessage() {}
+
+func (m *CPreMatchInfoData) Reset() {
+	*m = CPreMatchInfoData{}
+}
+
+func (m *CPreMatchInfoData) String() string {
+	return proto.CompactTextString(m)
+}
+
+func (*CPreMatchInfoData) ProtoMessage() {}
+
+func (m *CPreMatchInfoData_TeamStats) Reset() {
+	*m = CPreMatchInfoData_TeamStats{}
+}
+
+func (m *CPreMatchInfoData_TeamStats) String() string {
+	return proto.CompactTextString(m)
+}
+
+func (*CPreMatchInfoData_TeamStats) ProtoMessage() {}
+
 func (m *IpAddressMask) Reset() {
 	*m = IpAddressMask{}
 }
