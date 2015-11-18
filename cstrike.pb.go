@@ -1,4 +1,4 @@
-package csgoproto
+package csgo
 
 import (
 	proto "github.com/golang/protobuf/proto"
