@@ -32,7 +32,6 @@ func (c *CS) SetPlaying(playing bool) {
 
 func (c *CS) GetPlayerProfile(accountid uint64) {
 	newAccId := accountid - 76561197960265728
-
 	c.client.GC.Write(gamecoordinator.NewGCMsgProtobuf(AppId, uint32(k_EMsgGCCstrike15_v2_ClientRequestPlayersProfile), &CMsgGCCStrike15_v2_ClientRequestPlayersProfile{
 		AccountId:    proto.Uint32(uint32(newAccId)),
 		RequestLevel: proto.Uint32(32),
@@ -40,7 +39,8 @@ func (c *CS) GetPlayerProfile(accountid uint64) {
 }
 
 func (c *CS) ShakeHands() {
-	var _ = time.Second
+	// Try to avoid not being ready on instant call of connection
+	time.Sleep(5 * time.Second)
 	c.client.GC.Write(gamecoordinator.NewGCMsgProtobuf(AppId, uint32(EGCBaseClientMsg_k_EmsgGCClientHello), &CMsgClientHello{
 		Version: proto.Uint32(1),
 	}))
@@ -54,19 +54,76 @@ func (c *CS) ShakeHands() {
 	}
 }
 
+func (c *CS) RankString(rank uint32) (rankString string) {
+	switch rank {
+	case 1:
+		rankString = "Silver 1"
+	case 2:
+		rankString = "Silver 2"
+	case 3:
+		rankString = "Silver 3"
+	case 4:
+		rankString = "Silver 4"
+	case 5:
+		rankString = "Silver Elite"
+	case 6:
+		rankString = "Silver Elite Master"
+	case 7:
+		rankString = "Gold Nova 1"
+	case 8:
+		rankString = "Gold Nova 2"
+	case 9:
+		rankString = "Gold Nova 3"
+	case 10:
+		rankString = "Gold Nova Master"
+	case 11:
+		rankString = "Master Guardian 1"
+	case 12:
+		rankString = "Master Guardian 2"
+	case 13:
+		rankString = "Master Guardian Elite"
+	case 14:
+		rankString = "Distinguished Master Guardian"
+	case 15:
+		rankString = "Legendary Eagle"
+	case 16:
+		rankString = "Legendary Eagle Master"
+	case 17:
+		rankString = "Supreme Master First Class"
+	case 18:
+		rankString = "Global Elite"
+	}
+	return rankString
+}
+
 type GCReadyEvent struct{}
+
+type GCProfileFoundEvent struct {
+	Profile CMsgGCCStrike15_v2_MatchmakingGC2ClientHello
+}
 
 func (c *CS) HandleGCPacket(packet *gamecoordinator.GCPacket) {
 	if packet.AppId != AppId {
 		return
 	}
 
-	log.Println(packet)
 	switch EGCBaseClientMsg(packet.MsgType) {
 	case EGCBaseClientMsg_k_EmsgGCClientWelcome:
+		if c.isConnected {
+			break
+		}
 		c.isConnected = true
+		log.Println("CSGO Gamecoordinator Ready")
 		c.client.Emit(&GCReadyEvent{})
 		return
 	case EGCBaseClientMsg(k_EMsgGCCstrike15_v2_PlayersProfile):
+		profile := new(CMsgGCCStrike15_v2_PlayersProfile)
+		packet.ReadProtoMsg(profile)
+		if profile.AccountProfiles == nil {
+			break
+		} else {
+			c.client.Emit(&GCProfileFoundEvent{Profile: *profile.AccountProfiles[0]})
+
+		}
 	}
 }
