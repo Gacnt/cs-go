@@ -183,6 +183,20 @@ type CDataGCCStrike15_v2_TournamentMatchDraft_Entry struct {
 	TeamIdCT *int32 `protobuf:"varint,2,opt,name=team_id_ct" json:"team_id_ct,omitempty"`
 }
 
+type CMsgClientHello struct {
+	Version *uint32 `protobuf:"varint,1,opt,name=version" json:"version,omitempty"`
+}
+
+func (m *CMsgClientHello) Reset() {
+	*m = CMsgClientHello{}
+}
+
+func (m *CMsgClientHello) String() string {
+	return proto.CompactTextString(m)
+}
+
+func (*CMsgClientHello) ProtoMessage() {}
+
 func (m *CDataGCCStrike15_v2_TournamentMatchDraft_Entry) Reset() {
 	*m = CDataGCCStrike15_v2_TournamentMatchDraft_Entry{}
 }
