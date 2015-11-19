@@ -102,6 +102,8 @@ type GCProfileFoundEvent struct {
 	Profile CMsgGCCStrike15_v2_MatchmakingGC2ClientHello
 }
 
+type GCProfileNotFoundEvent struct{}
+
 func (c *CS) HandleGCPacket(packet *gamecoordinator.GCPacket) {
 	if packet.AppId != AppId {
 		return
@@ -113,17 +115,19 @@ func (c *CS) HandleGCPacket(packet *gamecoordinator.GCPacket) {
 			break
 		}
 		c.isConnected = true
-		log.Println("CSGO Gamecoordinator Ready")
 		c.client.Emit(&GCReadyEvent{})
 		return
 	case EGCBaseClientMsg(k_EMsgGCCstrike15_v2_PlayersProfile):
 		profile := new(CMsgGCCStrike15_v2_PlayersProfile)
 		packet.ReadProtoMsg(profile)
 		if profile.AccountProfiles == nil {
+			c.client.Emit(&GCProfileNotFoundEvent{})
 			break
 		} else {
 			c.client.Emit(&GCProfileFoundEvent{Profile: *profile.AccountProfiles[0]})
 
 		}
+	default:
+		log.Println(packet)
 	}
 }
