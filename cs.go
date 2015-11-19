@@ -130,6 +130,5 @@ func (c *CS) HandleGCPacket(packet *gamecoordinator.GCPacket) {
 
 		}
 	default:
-		log.Println(packet)
 	}
 }
