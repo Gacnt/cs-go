@@ -8,6 +8,7 @@ import (
 
 	"github.com/Philipp15b/go-steam"
 	"github.com/Philipp15b/go-steam/internal/gamecoordinator"
+	"github.com/Gacnt/cs-go/protos"
 	proto "github.com/golang/protobuf/proto"
 )
 
@@ -34,7 +35,7 @@ func (c *CS) SetPlaying(playing bool) {
 
 func (c *CS) GetPlayerProfile(accountid uint64) {
 	newAccId := accountid - 76561197960265728
-	c.client.GC.Write(gamecoordinator.NewGCMsgProtobuf(AppId, uint32(k_EMsgGCCstrike15_v2_ClientRequestPlayersProfile), &CMsgGCCStrike15_v2_ClientRequestPlayersProfile{
+	c.client.GC.Write(gamecoordinator.NewGCMsgProtobuf(AppId, uint32(csgobufs.ECsgoGCMsg_k_EMsgGCCStrike15_v2_ClientRequestPlayersProfile), &csgobufs.CMsgGCCStrike15V2_ClientRequestPlayersProfile{
 		AccountId:    proto.Uint32(uint32(newAccId)),
 		RequestLevel: proto.Uint32(32),
 	}))
@@ -43,7 +44,7 @@ func (c *CS) GetPlayerProfile(accountid uint64) {
 func (c *CS) ShakeHands() {
 	// Try to avoid not being ready on instant call of connection
 	time.Sleep(5 * time.Second)
-	c.client.GC.Write(gamecoordinator.NewGCMsgProtobuf(AppId, uint32(EGCBaseClientMsg_k_EmsgGCClientHello), &CMsgClientHello{
+	c.client.GC.Write(gamecoordinator.NewGCMsgProtobuf(AppId, uint32(csgobufs.EGCBaseClientMsg_k_EMsgGCClientHello), &csgobufs.CMsgClientHello{
 		Version: proto.Uint32(1),
 	}))
 
@@ -101,7 +102,7 @@ func (c *CS) RankString(rank uint32) (rankString string) {
 type GCReadyEvent struct{}
 
 type GCProfileFoundEvent struct {
-	Profile CMsgGCCStrike15_v2_MatchmakingGC2ClientHello
+	Profile csgobufs.CMsgGCCStrike15V2_MatchmakingGC2ClientHello
 }
 
 type GCProfileNotFoundEvent struct{}
@@ -111,16 +112,16 @@ func (c *CS) HandleGCPacket(packet *gamecoordinator.GCPacket) {
 		return
 	}
 
-	switch EGCBaseClientMsg(packet.MsgType) {
-	case EGCBaseClientMsg_k_EmsgGCClientWelcome:
+	switch csgobufs.EGCBaseClientMsg(packet.MsgType) {
+	case csgobufs.EGCBaseClientMsg_k_EMsgGCClientWelcome:
 		if c.isConnected {
 			break
 		}
 		c.isConnected = true
 		c.client.Emit(&GCReadyEvent{})
 		return
-	case EGCBaseClientMsg(k_EMsgGCCstrike15_v2_PlayersProfile):
-		profile := new(CMsgGCCStrike15_v2_PlayersProfile)
+	case csgobufs.EGCBaseClientMsg(csgobufs.ECsgoGCMsg_k_EMsgGCCStrike15_v2_PlayersProfile):
+		profile := new(csgobufs.CMsgGCCStrike15V2_PlayersProfile)
 		packet.ReadProtoMsg(profile)
 		if profile.AccountProfiles == nil {
 			c.client.Emit(&GCProfileNotFoundEvent{})
